@@ -41,6 +41,17 @@ function handleGet($mysqli) {
 }
 
 function handlePost($mysqli, $input) {
+  $checkSql = "SELECT id FROM users WHERE email = ?";
+    $checkStmt = $mysqli->prepare($checkSql);
+    $checkStmt->bind_param("s", $input['email']);
+    $checkStmt->execute();
+    $checkStmt->store_result();
+    
+    if ($checkStmt->num_rows > 0) {
+        echo json_encode(['message' => 'User with this email already exists']);
+        return;
+    }
+
     $sql = "INSERT INTO users (name, email) VALUES (?, ?)";
     $stmt = $mysqli->prepare($sql);
     $stmt->bind_param("ss", $input['name'], $input['email']);
